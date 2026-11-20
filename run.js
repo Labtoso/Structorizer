@@ -683,7 +683,7 @@ function renderRunState() {
   }
 }
 
-$('#runBtn').onclick = startRun;
+// $('#runBtn').onclick = startRun;
 $('#runBack').onclick = stepBack;
 $('#runStep').onclick = () => { if (runner?.playing) pause(); else step(); };
 $('#runPlay').onclick = play;

@@ -3,25 +3,26 @@
    when online (cache as fallback), other files are served from the cache and
    refreshed in the background. Bump VERSION whenever a precached file changes. */
 
-const VERSION = 'v18';
+const VERSION = 'v19';
 const CACHE = `structorizer-${VERSION}`;
 const SHELL = [
   './',
   'index.html',
-  'style.css?v=21',
+  'style.css?v=22',
   'themes.css?v=1',
   'themes.js?v=1',
-  'i18n.js?v=13',
-  'app.js?v=15',
+  'i18n.js?v=14',
+  'app.js?v=16',
   'codegen.js?v=1',
-  'run.js?v=5',
+  'run.js?v=6',
   'samples.js?v=1',
   'favicon.svg',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
-  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+  'workspace.js?v=1',
+  'vendor/html2canvas/html2canvas.min.js',
 ];
 // Third-party hosts whose files may be cached (fonts, libraries) – never analytics
 const CACHEABLE_HOSTS = ['cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];

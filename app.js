@@ -365,8 +365,8 @@ function decisionHead(text, labels) {
  *  If:     two diagonals meeting at the bottom between "wahr" and "falsch".
  *  Switch: the diagonals meet at the start of the default (last) column, on top of a
  *          row of case labels; every column divider continues up to the diagonal. */
-function layoutDecisions() {
-  document.querySelectorAll('#diagram .if > .head, #diagram .switch > .head').forEach((head) => {
+function layoutDecisions(root = document.querySelector('#diagram')) {
+  root.querySelectorAll('.if > .head, .switch > .head').forEach((head) => {
     const isSwitch = head.parentElement.classList.contains('switch');
     const cols = [...head.nextElementSibling.children];
     const branches = [...head.querySelectorAll('.branch')];
@@ -411,7 +411,7 @@ function layoutDecisions() {
 }
 // Re-measure whenever the diagram's size changes (web font loaded, sidebar toggled, window resized)
 new ResizeObserver(() => layoutDecisions()).observe(document.querySelector('#diagram'));
-document.fonts?.ready.then(layoutDecisions);
+document.fonts?.ready.then(() => layoutDecisions());
 
 function cols(lists) {
   const c = document.createElement('div');
@@ -1089,23 +1089,6 @@ $('#fileInput').addEventListener('change', async (e) => {
   }
 });
 
-async function exportImage() {
-  if (!window.html2canvas) { message(tr('msg.imageFailed')); return; }
-  const prev = selectedId;
-  selectedId = null;
-  render();
-  $('#diagram').classList.add('export');
-  try {
-    const canvas = await html2canvas($('#diagram'), { backgroundColor: '#fff', scale: 2 });
-    canvas.toBlob((b) => download(b, `${diagram().name}.png`));
-    track('image_export');
-  } finally {
-    $('#diagram').classList.remove('export');
-  }
-  selectedId = prev;
-  render();
-}
-
 /* ---------------- dialogs ---------------- */
 
 function openInfo(title, content) {
@@ -1134,13 +1117,14 @@ function showElementInfo(type) {
 
 function showHelp() {
   const div = document.createElement('div');
-  const keys = ['drag', 'select', 'move', 'keys', 'copy', 'tabs', 'run', 'save'];
+  const keys = ['drag', 'select', 'move', 'keys', 'copy', 'tabs', 'save'];
   if (IS_TOUCH) keys.splice(3, 0, 'touch');
   const items = keys.map((k) => `<li>${tr(`help.${k}`)}</li>`).join('');
   div.innerHTML = `
     <p>${tr('help.intro')}</p>
     <ul>${items}</ul>
-    <p><a href="https://janishuser.github.io/Structorizer/legacy/struct.html" target="_blank" rel="noopener">${tr('help.old')}</a></p>`;
+    <p><a href="./" target="_blank" rel="noopener">Structorizer</a> · <a href="https://github.com/Labtoso/Structorizer" target="_blank" rel="noopener">GitHub</a></p>
+    <p><a href="./legacy/struct.html" target="_blank" rel="noopener">${tr('help.old')}</a></p>`;
   openInfo(tr('help.title'), div);
   track('help_open');
 }
@@ -1248,7 +1232,7 @@ const actions = {
   open: () => $('#fileInput').click(),
   save: saveFile,
   code: showCode,
-  image: exportImage,
+  image: () => openImageExport(),
   undo, redo,
   delete: deleteSelected,
   copy: copySelected,
@@ -1316,7 +1300,8 @@ document.addEventListener('keydown', (e) => {
   }
   // finished or failed run: ← goes back to look at earlier steps (no other key is taken over)
   if (runner && e.key === 'ArrowLeft' && !mod && canStepBack()) { e.preventDefault(); stepBack(); return; }
-  if (mod && e.key === 'Enter') { e.preventDefault(); startRun(); return; }
+  // Runner temporarily disabled.
+  // if (mod && e.key === 'Enter') { e.preventDefault(); startRun(); return; }
   if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
   else if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
   else if (mod && e.key.toLowerCase() === 'c' && !hasTextSelection()) { if (copySelected()) e.preventDefault(); }
