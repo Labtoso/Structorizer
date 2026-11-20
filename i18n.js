@@ -9,6 +9,10 @@ const LANGS = { de: 'Deutsch', en: 'English', fr: 'Français', it: 'Italiano' };
 
 const I18N = {
   de: {
+    'move.pick': 'Verschieben',
+    'move.here': 'Hier einsetzen',
+    'move.up': 'Nach oben (Alt+↑)',
+    'move.down': 'Nach unten (Alt+↓)',
     'sidebar.size': 'Seitenleistenbreite',
     'image.format': 'Format',
     'image.font': 'Schriftgröße',
@@ -46,7 +50,7 @@ const I18N = {
     'help.title': 'Info', 'help.intro': '<b>Structorizer v2</b> – Struktogramme (Nassi-Shneiderman-Diagramme) im Browser erstellen.',
     'help.drag': 'Elemente aus der linken Leiste in das Struktogramm <b>ziehen</b>.',
     'help.select': 'Element anklicken zum Auswählen, <b>Doppelklick</b> zum Bearbeiten des Textes.',
-    'help.move': 'Bestehende Elemente können per Drag &amp; Drop verschoben werden.',
+    'help.move': 'Ziehe einen Block an die gewünschte Stelle oder wähle „Verschieben“ und dann „Hier einsetzen“. Mit Alt+↑ und Alt+↓ änderst du die Reihenfolge im selben Zweig.',
     'help.touch': 'Auf dem iPad: Element im Struktogramm <b>kurz gedrückt halten</b> und ziehen, Elemente aus der Leiste seitwärts herausziehen, <b>Doppeltippen</b> zum Bearbeiten.',
     'help.keys': '<kbd>Entf</kbd> löscht das ausgewählte Element, <kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Y</kbd> für Rückgängig / Wiederholen.',
     'help.tabs': 'Mit <b>+</b> in der Tableiste weitere Struktogramme (Funktionen) anlegen.',
@@ -120,6 +124,10 @@ const I18N = {
   },
 
   en: {
+    'move.pick': 'Move',
+    'move.here': 'Place here',
+    'move.up': 'Move up (Alt+↑)',
+    'move.down': 'Move down (Alt+↓)',
     'sidebar.size': 'Sidebar width',
     'image.format': 'Format',
     'image.font': 'Font size',
@@ -157,7 +165,7 @@ const I18N = {
     'help.title': 'About', 'help.intro': '<b>Structorizer v2</b> – create structograms (Nassi-Shneiderman diagrams) in your browser.',
     'help.drag': '<b>Drag</b> elements from the left sidebar into the diagram.',
     'help.select': 'Click an element to select it, <b>double-click</b> to edit its text.',
-    'help.move': 'Existing elements can be moved by drag &amp; drop.',
+    'help.move': 'Drag a block or select Move, then Place here. Press Alt+↑ or Alt+↓ to reorder blocks within a branch.',
     'help.touch': 'On iPad: <b>press and hold</b> an element in the diagram, then drag it; slide elements sideways out of the sidebar; <b>double-tap</b> to edit.',
     'help.keys': '<kbd>Del</kbd> deletes the selected element, <kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Y</kbd> undo / redo.',
     'help.tabs': 'Use <b>+</b> in the tab bar to add more diagrams (functions).',
@@ -231,6 +239,10 @@ const I18N = {
   },
 
   fr: {
+    'move.pick': 'Déplacer',
+    'move.here': 'Placer ici',
+    'move.up': 'Monter (Alt+↑)',
+    'move.down': 'Descendre (Alt+↓)',
     'sidebar.size': 'Largeur du panneau',
     'image.format': 'Format',
     'image.font': 'Taille du texte',
@@ -268,7 +280,7 @@ const I18N = {
     'help.title': 'À propos', 'help.intro': '<b>Structorizer v2</b> – créez des structogrammes (diagrammes de Nassi-Shneiderman) dans votre navigateur.',
     'help.drag': '<b>Faites glisser</b> les éléments de la barre de gauche dans le structogramme.',
     'help.select': 'Cliquez sur un élément pour le sélectionner, <b>double-cliquez</b> pour modifier son texte.',
-    'help.move': 'Les éléments existants peuvent être déplacés par glisser-déposer.',
+    'help.move': 'Fais glisser un bloc ou sélectionne Déplacer puis Placer ici. Alt+↑ et Alt+↓ changent l’ordre dans la même branche.',
     'help.touch': "Sur iPad : <b>maintenez appuyé</b> un élément du structogramme puis faites-le glisser ; tirez les éléments de la barre vers le côté ; <b>touchez deux fois</b> pour modifier.",
     'help.keys': "<kbd>Suppr</kbd> supprime l'élément sélectionné, <kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Y</kbd> pour annuler / rétablir.",
     'help.tabs': "Utilisez <b>+</b> dans la barre d'onglets pour ajouter d'autres structogrammes (fonctions).",
@@ -342,6 +354,10 @@ const I18N = {
   },
 
   it: {
+    'move.pick': 'Sposta',
+    'move.here': 'Inserisci qui',
+    'move.up': 'Sposta su (Alt+↑)',
+    'move.down': 'Sposta giù (Alt+↓)',
     'sidebar.size': 'Larghezza del pannello',
     'image.format': 'Formato',
     'image.font': 'Dimensione testo',
@@ -379,7 +395,7 @@ const I18N = {
     'help.title': 'Informazioni', 'help.intro': '<b>Structorizer v2</b> – crea strutturogrammi (diagrammi di Nassi-Shneiderman) nel browser.',
     'help.drag': '<b>Trascina</b> gli elementi dalla barra laterale nello strutturogramma.',
     'help.select': 'Fai clic su un elemento per selezionarlo, <b>doppio clic</b> per modificarne il testo.',
-    'help.move': 'Gli elementi esistenti possono essere spostati con il trascinamento.',
+    'help.move': 'Trascina un blocco oppure scegli Sposta e poi Inserisci qui. Con Alt+↑ e Alt+↓ cambi l’ordine nello stesso ramo.',
     'help.touch': "Su iPad: <b>tieni premuto</b> un elemento dello strutturogramma e trascinalo; trascina lateralmente gli elementi fuori dalla barra; <b>tocca due volte</b> per modificare.",
     'help.keys': "<kbd>Canc</kbd> elimina l'elemento selezionato, <kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Y</kbd> per annullare / ripristinare.",
     'help.tabs': 'Usa <b>+</b> nella barra delle schede per aggiungere altri strutturogrammi (funzioni).',

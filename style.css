@@ -590,3 +590,11 @@ body.collapsed #sidebarGrip { display: none; }
 .export-stage .head .branch { font-size: .84em; }
 .export-stage .struct > .title { background: var(--slot); }
 .export-stage .seq.empty { background-image: none; }
+.move-controls { display: grid; grid-template-columns: auto 1fr auto; gap: 4px; margin-top: 10px; }
+.move-controls button, .move-slot { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--accent-text); padding: 7px; }
+.move-controls button:disabled { opacity: .4; cursor: default; }
+.move-controls button[aria-pressed=true], .move-slot { background: var(--accent-soft); }
+.move-slot { margin: 3px; padding: 3px 7px; min-height: 28px; border: 1px dashed var(--accent); font-size: .9rem; font-weight: 600; line-height: 1.2; }
+.move-slot:hover, .move-slot:focus-visible { background: var(--accent); color: white; }
+.seq.end-over { box-shadow: inset 0 -4px 0 var(--accent); }
+.touch-ghost { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 7px 12px; }

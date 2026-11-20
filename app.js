@@ -184,6 +184,7 @@ function applyLanguage() {
 const targetOf = new WeakMap(); // DOM element -> { list, index } (element or empty sequence)
 
 function render() {
+  closeMovePicker();
   renderTabs();
   const d = diagram();
   const root = document.createElement('div');
@@ -204,10 +205,8 @@ function render() {
 function renderSeq(list, extraClass = '') {
   const seq = document.createElement('div');
   seq.className = 'seq ' + extraClass;
-  if (!list.length) {
-    seq.classList.add('empty');
-    targetOf.set(seq, { list, index: 0 });
-  }
+  targetOf.set(seq, { list, index: list.length });
+  if (!list.length) seq.classList.add('empty');
   list.forEach((node, i) => {
     const el = renderNode(node);
     if (i > 0) el.style.borderTop = '1px solid var(--line)';
@@ -435,6 +434,8 @@ function renderProps() {
   $('#props').hidden = !hit;
   $('#deleteBtn').disabled = !hit;
   if (!hit) return;
+  $('#moveUp').disabled = hit.index === 0;
+  $('#moveDown').disabled = hit.index === hit.list.length - 1;
   const node = hit.node;
   $('#propTitle').textContent = tr(`el.${node.type}.name`);
   $('#propLabel').textContent = tr(`field.${node.type}`);
@@ -533,6 +534,7 @@ $('#propText').addEventListener('input', (e) => {
 
 /** Selection only toggles a class – no re-render, so double clicks keep their target. */
 function select(id) {
+  closeMovePicker();
   if (id === selectedId) return;
   selectedId = id;
   document.querySelectorAll('#diagram .el.selected').forEach((el) => el.classList.remove('selected'));
@@ -683,6 +685,70 @@ if (IS_TOUCH) {
 $('#canvas').addEventListener('click', (e) => { if (e.target.id === 'canvas') select(null); });
 $('#deleteBtn').onclick = deleteSelected;
 
+/* Move a whole subtree to a boundary between siblings. Index refers to the
+   destination before removal, including for a move within the same list. */
+function canMove(src, list, index) {
+  if (!src || containsList(src.node, list)) return false;
+  return src.list !== list || (index !== src.index && index !== src.index + 1);
+}
+
+function moveBlock(src, list, index) {
+  if (!canMove(src, list, index)) return;
+  snapshot();
+  src.list.splice(src.index, 1);
+  if (src.list === list && src.index < index) index--;
+  list.splice(index, 0, src.node);
+  selectedId = src.node.id;
+  commit();
+  $('#diagram .el.selected')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+
+function nudge(direction) {
+  const src = selectedId && find(selectedId);
+  if (!src || src.index + direction < 0 || src.index + direction >= src.list.length) return;
+  moveBlock(src, src.list, src.index + (direction > 0 ? 2 : -1));
+}
+$('#moveUp').onclick = () => nudge(-1);
+$('#moveDown').onclick = () => nudge(1);
+
+function closeMovePicker() {
+  const button = $('#movePick');
+  if (button.getAttribute('aria-pressed') !== 'true') return;
+  button.setAttribute('aria-pressed', 'false');
+  button.textContent = tr('move.pick');
+  document.querySelectorAll('#diagram .move-slot').forEach(slot => slot.remove());
+  layoutDecisions();
+}
+
+$('#movePick').onclick = () => {
+  const button = $('#movePick');
+  if (button.getAttribute('aria-pressed') === 'true') { closeMovePicker(); return; }
+  const src = selectedId && find(selectedId);
+  if (!src) return;
+  button.setAttribute('aria-pressed', 'true');
+  button.textContent = tr('common.cancel');
+  for (const seq of document.querySelectorAll('#diagram .seq')) {
+    const { list } = targetOf.get(seq);
+    const siblings = [...seq.children];
+    for (let index = 0; index <= list.length; index++) {
+      if (!canMove(src, list, index)) continue;
+      const slot = document.createElement('button');
+      slot.className = 'move-slot';
+      slot.textContent = tr('move.here');
+      slot.onclick = event => {
+        event.stopPropagation();
+        moveBlock(src, list, index);
+        $('#movePick').focus({ preventScroll: true });
+      };
+      seq.insertBefore(slot, siblings[index] || null);
+    }
+  }
+  layoutDecisions();
+  const first = $('#diagram .move-slot');
+  if (first) first.focus({ preventScroll: true });
+  else closeMovePicker();
+};
+
 /* ---------------- drag & drop ---------------- */
 
 let dragData = null;      // { type } for new elements or { id } for moves
@@ -692,6 +758,7 @@ let indicator = null;     // element currently showing the insertion marker
 document.querySelectorAll('.tool').forEach((tool) => {
   tool.addEventListener('dragstart', (e) => {
     if (touch) { e.preventDefault(); return; }
+    closeMovePicker();
     dragData = { type: tool.dataset.type };
     e.dataTransfer.setData('text/plain', tool.dataset.type);
     e.dataTransfer.effectAllowed = 'copy';
@@ -703,10 +770,11 @@ document.querySelectorAll('.tool').forEach((tool) => {
 $('#diagram').addEventListener('dragstart', (e) => {
   const el = e.target.closest('.el');
   if (!el || touch) { e.preventDefault(); return; }
+  closeMovePicker();
   dragData = { id: el.dataset.id };
   e.dataTransfer.setData('text/plain', el.dataset.id);
   e.dataTransfer.effectAllowed = 'move';
-  setTimeout(() => el.classList.add('dragged'));
+  setTimeout(() => { if (dragData?.id === el.dataset.id) el.classList.add('dragged'); });
   document.body.classList.add('dragging');
 });
 
@@ -723,8 +791,8 @@ function clearIndicator() {
 function updateDrop(under, clientY) {
   if (!dragData) return false;
   const empty = under.closest('.seq.empty');
-  // free space below the last element of the (stretched) main sequence: append at the end
-  const end = !empty && under.matches('.struct > .seq') ? under : null;
+  // Unoccupied space at the bottom of any sequence appends inside that branch.
+  const end = !empty && under.matches('.seq') ? under : null;
   const el = !end && under.closest('.el');
   let target = null;
   let mark = null;
@@ -733,7 +801,7 @@ function updateDrop(under, clientY) {
     target = targetOf.get(empty);
     mark = empty;
   } else if (end) {
-    target = { list: diagram().body, index: diagram().body.length };
+    target = targetOf.get(end);
     mark = end;
   } else if (el) {
     const t = targetOf.get(el);
@@ -747,7 +815,7 @@ function updateDrop(under, clientY) {
   // a node can't be dropped into itself
   if (dragData.id) {
     const src = find(dragData.id);
-    if (src.node === (el && find(el.dataset.id)?.node) || containsList(src.node, target.list)) {
+    if (!canMove(src, target.list, target.index)) {
       clearIndicator(); dropTarget = null; return false;
     }
   }
@@ -764,27 +832,28 @@ $('#diagram').addEventListener('dragover', (e) => {
   if (updateDrop(e.target, e.clientY)) e.preventDefault();
 });
 
+$('#diagram').addEventListener('dragleave', e => {
+  if (!dragData || e.currentTarget.contains(e.relatedTarget)) return;
+  clearIndicator();
+  dropTarget = null;
+});
+
 $('#diagram').addEventListener('drop', (e) => {
   e.preventDefault();
+  updateDrop(e.target, e.clientY);
   performDrop();
 });
 
 function performDrop() {
   if (!dragData || !dropTarget) { endDrag(); return; }
+  const { list, index } = dropTarget;
+  const data = dragData;
+  endDrag();
+  if (data.id) { moveBlock(find(data.id), list, index); return; }
   snapshot();
-  let { list, index } = dropTarget;
-  let node;
-  if (dragData.type) {
-    node = createNode(dragData.type);
-  } else {
-    const src = find(dragData.id);
-    node = src.node;
-    src.list.splice(src.index, 1);
-    if (src.list === list && src.index < index) index--;
-  }
+  const node = createNode(data.type);
   list.splice(index, 0, node);
   selectedId = node.id;
-  endDrag();
   commit();
 }
 
@@ -817,12 +886,14 @@ function touchPick(e, data, source, slide) {
 }
 
 function beginTouchDrag() {
+  closeMovePicker();
   clearTimeout(touch.timer);
   touch.started = true;
   dragData = touch.data;
   document.body.classList.add('dragging');
   const r = touch.source.getBoundingClientRect();
-  const ghost = touch.source.cloneNode(true);
+  const ghost = document.createElement('div');
+  ghost.textContent = touch.data.id ? find(touch.data.id).node.text : touch.source.textContent;
   ghost.classList.remove('selected');
   ghost.classList.add('touch-ghost');
   ghost.style.width = `${Math.min(r.width, 320)}px`;
@@ -1157,6 +1228,16 @@ document.addEventListener('keydown', (e) => {
   if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); if (project) saveFile(); return; }
   if (mod && e.key.toLowerCase() === 'o') { e.preventDefault(); $('#fileInput').click(); return; }
   if (typing || dialogOpen || !project) return;
+  if (e.key === 'Escape' && $('#movePick').getAttribute('aria-pressed') === 'true') {
+    closeMovePicker();
+    $('#movePick').focus();
+    return;
+  }
+  if (selectedId && e.altKey && !mod && !e.shiftKey && ['ArrowUp', 'ArrowDown'].includes(e.key)) {
+    e.preventDefault();
+    nudge(e.key === 'ArrowUp' ? -1 : 1);
+    return;
+  }
   if (runner && !runner.done) { // while running: step, stop – no editing
     if (e.key === 'Escape') stopRun();
     else if (e.key === 'F10' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); $('#runStep').click(); }

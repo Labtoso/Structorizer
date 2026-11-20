@@ -3,6 +3,7 @@
 // Render an independent copy so changing export settings never disturbs the editor.
 function openImageExport() {
   if (!project) return;
+  closeMovePicker();
   const dialog = $('#imageDialog');
   const image = $('#imageResult');
   const status = $('#imageStatus');
