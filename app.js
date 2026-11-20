@@ -13,78 +13,6 @@ const IS_TOUCH = navigator.maxTouchPoints > 0;
 // iPadOS reports itself as a Mac
 const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
 
-/* ---------------- analytics & consent ----------------
-   Google Analytics is only downloaded once the visitor accepts (gtag + consent
-   defaults are set up in index.html). Until then nothing is sent or stored. */
-
-const GA_ID = 'G-J8R18F1LH0';
-const CONSENT_KEY = 'structorizer-consent'; // 'granted' | 'denied' (also read by the legacy pages)
-const CONSENT_AT_KEY = 'structorizer-consent-at'; // when the choice was made (ms since 1970)
-
-// Ask again after a while, but never on every visit (EU guidance: respect a refusal ~6 months)
-const DAY = 24 * 60 * 60 * 1000;
-const CONSENT_MAX_AGE = { granted: 395 * DAY, denied: 182 * DAY }; // ~13 months / ~6 months
-
-let consent = null; // 'granted' | 'denied' | null (ask)
-try {
-  consent = localStorage.getItem(CONSENT_KEY);
-  if (consent !== 'granted' && consent !== 'denied') {
-    consent = null;
-  } else {
-    let at = Number(localStorage.getItem(CONSENT_AT_KEY));
-    if (!at) { // choice made before dates were stored: count from now
-      at = Date.now();
-      localStorage.setItem(CONSENT_AT_KEY, String(at));
-    }
-    if (Date.now() - at > CONSENT_MAX_AGE[consent]) { // expired: forget it and ask again
-      if (consent === 'granted') deleteGaCookies();
-      localStorage.removeItem(CONSENT_KEY);
-      localStorage.removeItem(CONSENT_AT_KEY);
-      consent = null;
-    }
-  }
-} catch (e) { consent = null; /* storage blocked */ }
-
-let gaLoaded = false;
-
-function applyConsent() {
-  const granted = consent === 'granted';
-  gtag('consent', 'update', { analytics_storage: granted ? 'granted' : 'denied' });
-  if (granted && !gaLoaded) {
-    gaLoaded = true;
-    gtag('config', GA_ID);
-    const s = document.createElement('script');
-    s.async = true;
-    s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-    document.head.append(s);
-  }
-}
-
-/** Remove Google Analytics cookies after consent is withdrawn. */
-function deleteGaCookies() {
-  document.cookie.split('; ').map((c) => c.split('=')[0]).filter((n) => n.startsWith('_ga')).forEach((name) => {
-    const expired = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-    document.cookie = expired;
-    document.cookie = `${expired}; domain=${location.hostname}`;
-    document.cookie = `${expired}; domain=.${location.hostname}`;
-  });
-}
-
-function setConsent(granted) {
-  consent = granted ? 'granted' : 'denied';
-  try {
-    localStorage.setItem(CONSENT_KEY, consent);
-    localStorage.setItem(CONSENT_AT_KEY, String(Date.now()));
-  } catch (e) { /* ignore */ }
-  applyConsent();
-  if (!granted) deleteGaCookies();
-}
-
-/** Send a usage event (only with consent). */
-function track(name, params = {}) {
-  if (consent === 'granted') gtag('event', name, params);
-}
-
 // Code examples are language-neutral; names and descriptions live in i18n.js
 const EXAMPLES = {
   while: 'while (a >= 1) {\n  …\n}',
@@ -226,7 +154,6 @@ function localizeProject(p) {
 }
 
 function setLanguage(code) {
-  if (code !== lang) track('language_change', { ui_language: code });
   lang = code;
   saveLanguage();
   applyLanguage();
@@ -622,7 +549,6 @@ function insertNode(type) {
   snapshot();
   placeNode(createNode(type));
   commit();
-  track('element_add', { element_type: type, method: 'button' });
 }
 
 /* ---------------- copy & paste ----------------
@@ -662,7 +588,6 @@ function pasteClipboard() {
   snapshot();
   placeNode(node);
   commit();
-  track('element_paste');
 }
 
 function duplicateSelected() {
@@ -673,7 +598,6 @@ function duplicateSelected() {
   hit.list.splice(hit.index + 1, 0, copy);
   selectedId = copy.id;
   commit();
-  track('element_duplicate');
 }
 
 /** Enable / disable the edit commands that need a selection or a clipboard. */
@@ -836,17 +760,16 @@ $('#diagram').addEventListener('dragover', (e) => {
 
 $('#diagram').addEventListener('drop', (e) => {
   e.preventDefault();
-  performDrop('drag');
+  performDrop();
 });
 
-function performDrop(method) {
+function performDrop() {
   if (!dragData || !dropTarget) { endDrag(); return; }
   snapshot();
   let { list, index } = dropTarget;
   let node;
   if (dragData.type) {
     node = createNode(dragData.type);
-    track('element_add', { element_type: dragData.type, method });
   } else {
     const src = find(dragData.id);
     node = src.node;
@@ -969,7 +892,7 @@ document.addEventListener('touchend', (e) => {
   releaseTouch();
   if (started) {
     e.preventDefault(); // no click after a drag
-    performDrop('touch');
+    performDrop();
   }
 }, { passive: false });
 
@@ -1021,10 +944,7 @@ function showCode() {
   box.className = 'code-box';
   const pre = document.createElement('pre');
   const langs = { java: 'Java', python: 'Python' };
-  let current = 'java';
   const show = (lang) => {
-    current = lang;
-    track('code_export', { code_language: lang });
     try {
       pre.textContent = generate(lang);
     } catch (e) {
@@ -1043,7 +963,6 @@ function showCode() {
     tabs.append(b);
   });
   copy.onclick = () => {
-    track('code_copy', { code_language: current });
     navigator.clipboard?.writeText(pre.textContent).then(() => { copy.textContent = tr('code.copied'); });
   };
   box.append(pre, copy);
@@ -1070,7 +989,6 @@ function download(blob, filename) {
 function saveFile() {
   const data = JSON.stringify({ app: 'structorizer', version: 2, project }, null, 2);
   download(new Blob([data], { type: 'application/json' }), `${project.title}.struct`);
-  track('project_save');
 }
 
 $('#fileInput').addEventListener('change', async (e) => {
@@ -1083,7 +1001,6 @@ $('#fileInput').addEventListener('change', async (e) => {
     if (!Array.isArray(p.diagrams)) throw new Error('format');
     $('#startDialog').close();
     loadProject(p);
-    track('project_open', { source: 'file' });
   } catch (err) {
     message(tr('msg.badFile'));
   }
@@ -1126,61 +1043,7 @@ function showHelp() {
     <p><a href="./" target="_blank" rel="noopener">Structorizer</a> · <a href="https://github.com/Labtoso/Structorizer" target="_blank" rel="noopener">GitHub</a></p>
     <p><a href="./legacy/struct.html" target="_blank" rel="noopener">${tr('help.old')}</a></p>`;
   openInfo(tr('help.title'), div);
-  track('help_open');
 }
-
-// Operator of the site (legal notice / data controller), same in every language
-const OPERATOR = {
-  company: 'J.Huser IT Services',
-  owner: 'Janis Huser',
-  street: 'Abläschstrasse 66',
-  city: '8750 Glarus, Schweiz',
-  uid: 'CHE-299.352.957',
-  email: 'info@jhuser-it-services.ch',
-  website: 'https://jhuser-it-services.ch',
-};
-
-function showPrivacy() {
-  const o = OPERATOR;
-  const div = document.createElement('div');
-  div.innerHTML = `
-    <p><b>${tr('privacy.responsible')}:</b><br>
-      ${o.company}<br>
-      ${tr('privacy.owner')}: ${o.owner}<br>
-      ${o.street}<br>
-      ${o.city}<br>
-      UID: ${o.uid}<br>
-      <a href="mailto:${o.email}">${o.email}</a> · <a href="${o.website}" target="_blank" rel="noopener">${o.website.replace('https://', '')}</a></p>
-    <p>${tr('privacy.rights')}</p>
-    <p>${tr('privacy.local')}</p>
-    <p>${tr('privacy.ga')}</p>
-    <p>${tr('privacy.third')}</p>
-    <p class="hint">${tr(consent === 'granted' ? 'privacy.status.granted' : 'privacy.status.denied')}</p>
-    <button class="insert-btn"></button>`;
-  const toggle = div.querySelector('button');
-  toggle.textContent = tr(consent === 'granted' ? 'privacy.disable' : 'privacy.enable');
-  toggle.onclick = () => {
-    const grant = consent !== 'granted';
-    $('#infoDialog').close();
-    chooseConsent(grant);
-  };
-  openInfo(tr('privacy.title'), div);
-}
-
-/* consent dialog: asked once, before the start dialog */
-function chooseConsent(granted) {
-  setConsent(granted);
-  if ($('#consentDialog').open) $('#consentDialog').close();
-}
-$('#consentAccept').onclick = () => chooseConsent(true);
-$('#consentDecline').onclick = () => chooseConsent(false);
-$('#consentMore').onclick = (e) => { e.preventDefault(); showPrivacy(); };
-// Esc should not skip the choice (closedby="none" in index.html; preventDefault for older browsers).
-// If a browser closes it anyway, nothing is loaded or stored and the question comes back next visit.
-$('#consentDialog').addEventListener('cancel', (e) => e.preventDefault());
-$('#consentDialog').addEventListener('close', () => {
-  if (!project && !$('#startDialog').open) showStart();
-});
 
 /* start dialog */
 function showStart() {
@@ -1196,7 +1059,6 @@ $('#newTitle').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.t
 $('#createBtn').onclick = () => {
   $('#startDialog').close();
   newProject($('#newTitle').value.trim());
-  track('project_create');
 };
 $('#openBtn').onclick = () => $('#fileInput').click();
 $('#samplesBtn').onclick = () => showSamples();
@@ -1204,7 +1066,6 @@ $('#lastBtn').onclick = () => {
   try {
     loadProject(JSON.parse(localStorage.getItem(STORAGE_KEY)));
     $('#startDialog').close();
-    track('project_open', { source: 'last' });
   } catch (e) { message(tr('msg.lastFailed')); }
 };
 $('#startDialog').addEventListener('close', () => {
@@ -1240,7 +1101,6 @@ const actions = {
   paste: pasteClipboard,
   duplicate: duplicateSelected,
   info: showHelp,
-  privacy: showPrivacy,
 };
 
 document.querySelectorAll('.menu').forEach((menu) => {
@@ -1259,7 +1119,7 @@ document.querySelectorAll('.menu').forEach((menu) => {
 });
 document.addEventListener('click', () => document.querySelectorAll('.menu.open').forEach((m) => m.classList.remove('open')));
 // Commands that don't change the diagram can be used during a run; anything else ends it first
-const RUN_SAFE_ACTIONS = new Set(['save', 'code', 'image', 'info', 'privacy', 'copy']);
+const RUN_SAFE_ACTIONS = new Set(['save', 'code', 'image', 'info', 'copy']);
 document.querySelectorAll('[data-action]').forEach((b) => {
   b.onclick = () => {
     if (runner && !runner.done && !RUN_SAFE_ACTIONS.has(b.dataset.action)) stopRun();
@@ -1277,7 +1137,6 @@ $('#addTab').onclick = async () => {
   project.active = project.diagrams.length - 1;
   selectedId = null;
   commit();
-  track('diagram_add');
 };
 
 $('#collapseBtn').onclick = () => document.body.classList.toggle('collapsed');
@@ -1332,6 +1191,4 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => { /* offline mode unavailable */ });
 }
 applyLanguage();
-if (consent === 'granted') applyConsent();
-if (consent) showStart();
-else $('#consentDialog').showModal();
+showStart();

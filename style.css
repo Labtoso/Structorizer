@@ -450,11 +450,6 @@ dialog::backdrop { background: rgba(15, 17, 21, .35); backdrop-filter: blur(4px)
 /* touch: the sidebar field just shows the text, tapping it opens the dialog */
 .props textarea[readonly] { cursor: pointer; }
 
-#consentDialog { width: min(420px, calc(100vw - 32px)); padding: 22px; }
-#consentDialog h4 { margin: 0 0 10px; font-size: 16px; }
-#consentDialog p { margin: 0 0 10px; line-height: 1.55; font-size: 13.5px; }
-#consentDialog a { color: var(--accent-text); }
-#consentDialog .ask-actions button { min-width: 110px; }
 
 dialog.info { width: min(660px, calc(100vw - 32px)); padding: 0; overflow: hidden; }
 dialog.info header {

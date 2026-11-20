@@ -3,19 +3,19 @@
    when online (cache as fallback), other files are served from the cache and
    refreshed in the background. Bump VERSION whenever a precached file changes. */
 
-const VERSION = 'v19';
+const VERSION = 'v20';
 const CACHE = `structorizer-${VERSION}`;
 const SHELL = [
   './',
   'index.html',
-  'style.css?v=22',
+  'style.css?v=23',
   'themes.css?v=1',
   'themes.js?v=1',
-  'i18n.js?v=14',
-  'app.js?v=16',
+  'i18n.js?v=15',
+  'app.js?v=17',
   'codegen.js?v=1',
-  'run.js?v=6',
-  'samples.js?v=1',
+  'run.js?v=7',
+  'samples.js?v=2',
   'favicon.svg',
   'manifest.webmanifest',
   'icons/icon-192.png',

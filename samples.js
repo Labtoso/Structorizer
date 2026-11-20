@@ -236,7 +236,6 @@ async function openSample(s) {
   }
   if (runner) closeRun();
   loadProject(sampleProject(s));
-  track('sample_open', { sample: s.id });
 }
 
 /** A new project made from a sample, titled in the current language. */

@@ -800,27 +800,6 @@
 			});*/
         });
     </script>
-	<!-- Google Analytics: only loaded if the visitor allowed statistics in the new editor
-	     (same choice, stored as 'structorizer-consent'; can be changed there under Hilfe -> Datenschutz) -->
-<script>
-  (function () {
-    var consent = null;
-    try { consent = localStorage.getItem('structorizer-consent'); } catch (e) { /* storage blocked */ }
-    if (consent !== 'granted') return;
-    var at = 0;
-    try { at = Number(localStorage.getItem('structorizer-consent-at')); } catch (e) { /* ignore */ }
-    if (at && Date.now() - at > 395 * 24 * 60 * 60 * 1000) return; // older than ~13 months: the editor asks again first
-    window.dataLayer = window.dataLayer || [];
-    var gtag = window.gtag = function () { window.dataLayer.push(arguments); };
-    gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
-    gtag('js', new Date());
-    gtag('config', 'G-J8R18F1LH0');
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-J8R18F1LH0';
-    document.head.appendChild(s);
-  })();
-</script>
 </head>
 
 <body>

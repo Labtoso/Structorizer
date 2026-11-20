@@ -448,7 +448,6 @@ function startRun() {
   document.body.classList.add('running');
   $('#runPanel').hidden = false;
   $('#runOutput').textContent = '';
-  track('run_start');
   step();
 }
 
@@ -571,7 +570,6 @@ function failRun(e) {
   document.body.classList.remove('running');
   showStep();
   renderRunState();
-  track('run_error');
 }
 
 function backHome() {
