@@ -12,7 +12,7 @@ Plain HTML/CSS/JavaScript with no build step: `index.html`, `style.css`, `i18n.j
 - Multiple diagrams per project (tabs), e.g. for functions
 - Undo/redo, autosave to localStorage, download/open project files (`.struct`, JSON)
 - Export as Java/C-style code or Python, and as a PNG image
-- German, English, French and Italian UI: chosen at startup, remembered in a cookie (add languages in `i18n.js`)
+- German, English, French and Italian UI: chosen at startup, saved in local browser storage (add languages in `i18n.js`)
 
 ## Run locally
 

@@ -5,6 +5,8 @@
 -->
 
 <head>
+  <script src="../clear-old-cookies.js"></script>
+  <link rel="stylesheet" href="../vendor/fonts/fonts.css">
     <link rel="stylesheet" href="styles/styleElements.css" />
     <link rel="stylesheet" href="styles/generall.css" />
     <link rel="stylesheet" href="styles/overview.css" />
@@ -17,7 +19,7 @@
 	<link rel="stylesheet" href="styles/firstVisit.css" />
     <title>Structorizer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=0">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="script/jquery.min.js"></script>
     <script src="script/createElem.js?version=1.0" type="text/javascript"></script>
     <script src="script/engine.js?version=1.0" type="text/javascript"></script>
     <script src="script/informationDiv.js" type="text/javascript"></script>
@@ -36,13 +38,9 @@
     <script src="script/standard_fonts_metrics.js" type="text/javascript"></script>
     <script src="script/downloadStruct.js" type="text/javascript"></script>
     <script src="script/domToImage.js" type="text/javascript"></script>
-    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
     <link rel="icon" href="favicon.png">
-<script type="text/javascript">
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'de', autoDisplay: false}, 'google_translate_element');
-}
-</script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
         
     <script>
         var GlobalSettings = {
@@ -1179,11 +1177,6 @@ function googleTranslateElementInit() {
         function setProjectTitle(title) {
             if (typeof(Storage) !== "undefined") {
                 window.localStorage.setItem("projectTtile", title);
-            } else if(navigator.cookieEnabled) {
-                var d = new Date();
-                d.setTime(d.getTime() + (365*24*60*60*1000));
-                var expires = "expires="+ d.toUTCString();
-                document.cookie = "projectTtile" + "=" + title + ";" + expires + ";path=/";
             }
 			var formData = new FormData();
 			var content = "";
@@ -1210,26 +1203,10 @@ function googleTranslateElementInit() {
         function getProjetTitle() {
             if (typeof(Storage) !== "undefined") {
                 return window.localStorage.getItem("projectTtile");
-            } else if(navigator.cookieEnabled) {
-                getCookie("projectTitle");
             }
 			
         }
-        function getCookie(cname) {
-            var name = cname + "=";
-            var decodedCookie = decodeURIComponent(document.cookie);
-            var ca = decodedCookie.split(';');
-            for(var i = 0; i <ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
+
 
         function getFracture(percentage) {
             var fracture1 =  1/(percentage/100),
@@ -1251,8 +1228,6 @@ function googleTranslateElementInit() {
 			var structCode;
 			if (typeof(Storage) !== "undefined") {
                 structCode = window.localStorage.getItem("structCode");
-            } else if(navigator.cookieEnabled) {
-                structCode = getCookie("structCode");
             }
 			
 			var formData = new FormData();
@@ -1282,11 +1257,6 @@ function googleTranslateElementInit() {
 		function setStructCode(structCode) {
 			if (typeof(Storage) !== "undefined") {
                 window.localStorage.setItem("structCode", structCode);
-            } else if(navigator.cookieEnabled) {
-                var d = new Date();
-                d.setTime(d.getTime() + (365*24*60*60*1000));
-                var expires = "expires="+ d.toUTCString();
-                document.cookie = "structCode" + "=" + structCode + ";" + expires + ";path=/";
             }
 		}
 		function addNewMessage(title) {
@@ -1304,19 +1274,12 @@ function googleTranslateElementInit() {
 			var code = getProjectCode();
 			if (typeof(Storage) !== "undefined") {
                 window.localStorage.setItem("structCodeReOpen", code);
-            } else if(navigator.cookieEnabled) {
-                var d = new Date();
-                d.setTime(d.getTime() + (365*24*60*60*1000));
-                var expires = "expires="+ d.toUTCString();
-                document.cookie = "structCodeReOpen" + "=" + code + ";" + expires + ";path=/";
             }
 		}
 		
 		function getProjectCode() {
 			if (typeof(Storage) !== "undefined") {
                 return window.localStorage.getItem("structCode");
-            } else if(navigator.cookieEnabled) {
-                getCookie("structCode");
             }
 		}
     </script>
@@ -1619,7 +1582,7 @@ function googleTranslateElementInit() {
                     <div class="navigationHeader">Navigation</div>
                 </div>
                 <div class="loadingContent">
-                        <div id="google_translate_element"></div>
+                        
                 </div>
             </div>
         </div>

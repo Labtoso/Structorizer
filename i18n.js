@@ -445,11 +445,13 @@ const I18N = {
   },
 };
 
-const LANG_COOKIE = 'structorizer_lang';
+const LANGUAGE_KEY = 'structorizer.language';
 
 function savedLanguage() {
-  const match = document.cookie.match(new RegExp(`(?:^|; )${LANG_COOKIE}=([^;]*)`));
-  return match && LANGS[match[1]] ? match[1] : null;
+  try {
+    const value = localStorage.getItem(LANGUAGE_KEY);
+    return Object.hasOwn(LANGS, value) ? value : null;
+  } catch { return null; }
 }
 
 // English unless the visitor has picked another language (start dialog or menu)
@@ -458,9 +460,7 @@ const DEFAULT_LANG = 'en';
 let lang = savedLanguage() || DEFAULT_LANG;
 
 function saveLanguage() {
-  const path = location.pathname.replace(/[^/]*$/, '');
-  const secure = location.protocol === 'https:' ? '; Secure' : '';
-  document.cookie = `${LANG_COOKIE}=${lang}; Max-Age=31536000; Path=${path}; SameSite=Lax${secure}`;
+  try { localStorage.setItem(LANGUAGE_KEY, lang); } catch { /* Memory-only session. */ }
 }
 
 /** Translate a key; {placeholders} are filled from params. */
