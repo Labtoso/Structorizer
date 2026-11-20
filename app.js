@@ -171,6 +171,7 @@ function setLanguage(code) {
 
 function applyLanguage() {
   translatePage();
+  updateSidebarToggle();
   $('#langSelect').value = lang;
   document.querySelectorAll('#langPicker button').forEach((b) => {
     const active = b.dataset.lang === lang;
@@ -1216,7 +1217,17 @@ $('#addTab').onclick = async () => {
   commit();
 };
 
-$('#collapseBtn').onclick = () => document.body.classList.toggle('collapsed');
+function updateSidebarToggle() {
+  const collapsed = document.body.classList.contains('collapsed');
+  const button = $('#collapseBtn');
+  button.title = tr(collapsed ? 'sidebar.expand' : 'sidebar.collapse');
+  button.setAttribute('aria-label', button.title);
+  button.setAttribute('aria-expanded', String(!collapsed));
+}
+$('#collapseBtn').onclick = () => {
+  document.body.classList.toggle('collapsed');
+  updateSidebarToggle();
+};
 
 // Text selected on the page (e.g. in a dialog) keeps the browser's own copy
 const hasTextSelection = () => !!window.getSelection()?.toString();
