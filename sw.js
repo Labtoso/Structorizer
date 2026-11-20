@@ -3,7 +3,7 @@
    when online (cache as fallback), other files are served from the cache and
    refreshed in the background. Bump VERSION whenever a precached file changes. */
 
-const VERSION = 'v23';
+const VERSION = 'v24';
 const CACHE = `structorizer-${VERSION}`;
 const SHELL = [
   './',
@@ -12,7 +12,7 @@ const SHELL = [
   'vendor/fonts/fonts.css',
   'vendor/fonts/inter-latin-wght-normal.woff2',
   'vendor/fonts/jetbrains-mono-latin-wght-normal.woff2',
-  'style.css?v=25',
+  'style.css?v=26',
   'themes.css?v=2',
   'themes.js?v=2',
   'i18n.js?v=18',
