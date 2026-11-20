@@ -9,6 +9,7 @@ const LANGS = { de: 'Deutsch', en: 'English', fr: 'Français', it: 'Italiano' };
 
 const I18N = {
   de: {
+    'appearance': 'Design', 'appearance.system': 'System',
     'menu.file': 'Datei', 'menu.edit': 'Bearbeiten', 'menu.help': 'Hilfe',
     'action.new': 'Neues Projekt', 'action.open': 'Projekt/Datei öffnen', 'action.save': 'Download',
     'action.code': 'Code exportieren', 'action.image': 'Bild erstellen',
@@ -122,6 +123,7 @@ const I18N = {
   },
 
   en: {
+    'appearance': 'Appearance', 'appearance.system': 'System',
     'menu.file': 'File', 'menu.edit': 'Edit', 'menu.help': 'Help',
     'action.new': 'New project', 'action.open': 'Open project/file', 'action.save': 'Download',
     'action.code': 'Export code', 'action.image': 'Create image',
@@ -235,6 +237,7 @@ const I18N = {
   },
 
   fr: {
+    'appearance': 'Apparence', 'appearance.system': 'Système',
     'menu.file': 'Fichier', 'menu.edit': 'Édition', 'menu.help': 'Aide',
     'action.new': 'Nouveau projet', 'action.open': 'Ouvrir un projet/fichier', 'action.save': 'Télécharger',
     'action.code': 'Exporter le code', 'action.image': 'Créer une image',
@@ -348,6 +351,7 @@ const I18N = {
   },
 
   it: {
+    'appearance': 'Aspetto', 'appearance.system': 'Sistema',
     'menu.file': 'File', 'menu.edit': 'Modifica', 'menu.help': 'Aiuto',
     'action.new': 'Nuovo progetto', 'action.open': 'Apri progetto/file', 'action.save': 'Scarica',
     'action.code': 'Esporta codice', 'action.image': 'Crea immagine',

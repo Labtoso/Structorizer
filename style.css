@@ -38,35 +38,6 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1115;
-    --surface: #171a20;
-    --surface-2: #1c2027;
-    --hover: #242933;
-    --border: #2a2f39;
-    --text: #e7e9ee;
-    --muted: #8b93a3;
-    --accent: #8282ff;
-    --accent-soft: #24244a;
-    --accent-text: #b4b4ff;
-    --danger: #ff6369;
-    --danger-soft: #3b1a1c;
-    --dot: #252a33;
-    --paper: #1b1e25;
-    --line: #c9cdd6;
-    --slot: #22262e;
-    --slot-hover: #2d2d5c;
-    --el-hover: #20242c;
-    --code-bg: #14161b;
-    --code-text: #e6e8ee;
-    --code-border: #2a2f39;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -6px rgba(0,0,0,.5);
-    --shadow-lg: 0 24px 60px -12px rgba(0,0,0,.7);
-    color-scheme: dark;
-  }
-}
-
 /* Image export always renders on light paper */
 #diagram.export {
   --paper: #fff; --line: #1c1f26; --slot: #f2f3f8; --text: #16181d; --muted: #6b7280;
@@ -396,10 +367,9 @@ body.running #diagram, body.running #tabs, body.running #addTab, body.running .s
 body.running .side-scroll { opacity: .45; }
 body.running #diagram .el.selected { outline: 0; box-shadow: none; }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) #diagram .run-current, :root:not([data-theme="light"]) #runVars tr.changed td { background: #4a3a10 !important; }
-  :root:not([data-theme="light"]) .run-status.done { background: #12321f; color: #5fd08f; }
-}
+
+  :is([data-theme="midnight"], [data-theme="ember"]) #diagram .run-current, :is([data-theme="midnight"], [data-theme="ember"]) #runVars tr.changed td { background: #4a3a10 !important; }
+  :is([data-theme="midnight"], [data-theme="ember"]) .run-status.done { background: #12321f; color: #5fd08f; }
 /* Narrow windows and portrait iPad: the run panel sits at the bottom (two columns) so the
    diagram keeps the full width */
 @media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
