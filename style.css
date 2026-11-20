@@ -360,8 +360,8 @@ body.running .side-scroll { opacity: .45; }
 body.running #diagram .el.selected { outline: 0; box-shadow: none; }
 
 
-  :is([data-theme="midnight"], [data-theme="ember"]) #diagram .run-current, :is([data-theme="midnight"], [data-theme="ember"]) #runVars tr.changed td { background: #4a3a10 !important; }
-  :is([data-theme="midnight"], [data-theme="ember"]) .run-status.done { background: #12321f; color: #5fd08f; }
+  :is([data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) #diagram .run-current, :is([data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) #runVars tr.changed td { background: #4a3a10 !important; }
+  :is([data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) .run-status.done { background: #12321f; color: #5fd08f; }
 /* Narrow windows and portrait iPad: the run panel sits at the bottom (two columns) so the
    diagram keeps the full width */
 @media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
@@ -573,9 +573,10 @@ body.collapsed #sidebarGrip { display: none; }
 #imageDialog { width: min(660px, calc(100vw - 24px)); }
 #imageDialog header, #imageDialog footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 #imageDialog h2 { margin: 0; letter-spacing: -.04em; }
-.image-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
+.image-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
 .image-options label { display: grid; gap: 5px; font-weight: 600; }
-.image-options select { width: 100%; padding: 8px 4px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 7px; font: inherit; }
+.image-options :is(select, input) { width: 100%; padding: 8px 4px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 7px; font: inherit; }
+@media (max-width: 600px) { .image-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .image-preview { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; min-height: 80px; padding: 12px; display: grid; place-items: center; }
 .image-preview img { display: block; max-width: 100%; max-height: 43vh; object-fit: contain; }
 .image-preview img[hidden] { display: none; }
@@ -585,5 +586,7 @@ body.collapsed #sidebarGrip { display: none; }
 .export-stage { position: absolute; left: -100000px; top: 0; width: max-content; min-width: 384px; padding: 20px;
   --paper: #fff; --line: #283446; --slot: #f0f3f8; --muted: #46556a; color: #172334; background: var(--paper); }
 .export-stage[data-mode="dark"] { --paper: #202836; --line: #cbd5e5; --slot: #303c50; --muted: #c4d0df; color: #f4f7fb; }
+.export-stage .struct { min-width: min-content; }
+.export-stage .head .branch { font-size: .84em; }
 .export-stage .struct > .title { background: var(--slot); }
 .export-stage .seq.empty { background-image: none; }

@@ -7,7 +7,7 @@ function openImageExport() {
   const image = $('#imageResult');
   const status = $('#imageStatus');
   const save = $('#imageSave');
-  const selectors = [...dialog.querySelectorAll('select')];
+  const selectors = [...dialog.querySelectorAll('select, input')];
   let revision = 0;
   let rendering = false;
   let closed = false;
@@ -34,7 +34,13 @@ function openImageExport() {
       while (!closed && dialog.open) {
         const requested = revision;
         const mode = $('#imageMode').value;
-        const scale = Number($('#imageScale').value);
+        const widthInput = $('#imageWidth');
+        if (!widthInput.validity.valid) {
+          status.textContent = tr('image.invalidWidth');
+          return;
+        }
+        const width = widthInput.valueAsNumber;
+        const fontScale = Number($('#imageFont').value);
         const jpeg = $('#imageFormat').value === 'JPEG';
         const stage = document.createElement('div');
         stage.className = 'export-stage';
@@ -45,9 +51,18 @@ function openImageExport() {
         try {
           stage.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
           await document.fonts.ready;
+          // Keep the layout width stable as text grows; rows can wrap and gain height.
+          stage.style.width = Math.max(640, stage.offsetWidth) + 'px';
+          stage.style.fontSize = (parseFloat(getComputedStyle(stage).fontSize) * fontScale) + 'px';
           layoutDecisions(stage);
-          const width = Math.ceil(stage.offsetWidth) * scale;
-          const height = Math.ceil(stage.offsetHeight) * scale;
+          const padding = parseFloat(getComputedStyle(stage).paddingRight);
+          const contentWidth = stage.firstElementChild.getBoundingClientRect().width + 2 * padding;
+          if (contentWidth > stage.offsetWidth) {
+            stage.style.width = Math.ceil(contentWidth) + 'px';
+            layoutDecisions(stage);
+          }
+          const scale = width / stage.offsetWidth;
+          const height = Math.ceil(stage.offsetHeight * scale);
           if (width * height > 16777216 || Math.max(width, height) > 16384) throw new RangeError();
           // Embedded SVGs are rendered as standalone images by html2canvas.
           for (const svg of stage.querySelectorAll('svg')) {
@@ -61,9 +76,13 @@ function openImageExport() {
               shape.setAttribute('fill', 'none');
             }
           }
-          const canvas = await html2canvas(stage, {
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          await html2canvas(stage, {
+            canvas,
             backgroundColor: getComputedStyle(stage).backgroundColor,
-            scale, logging: false, width: width / scale, height: height / scale,
+            scale, logging: false, width: stage.offsetWidth, height: stage.offsetHeight,
           });
           const blob = await new Promise(resolve => canvas.toBlob(resolve, jpeg ? 'image/jpeg' : 'image/png', .95));
           if (!blob) throw new Error('Encoding failed');
@@ -87,14 +106,14 @@ function openImageExport() {
     }
   }
 
-  selectors.forEach(select => select.onchange = refresh);
+  selectors.forEach(select => select.oninput = refresh);
   save.onclick = () => {
     if (result) download(result, title + (result.type === 'image/jpeg' ? '.jpg' : '.png'));
   };
   dialog.addEventListener('close', () => {
     closed = true;
     revision++;
-    selectors.forEach(select => select.onchange = null);
+    selectors.forEach(select => select.oninput = null);
     save.onclick = null;
     clearPreview();
   }, { once: true });

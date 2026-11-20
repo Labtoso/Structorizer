@@ -26,6 +26,12 @@ const EXAMPLES = {
 };
 
 let project = null;
+
+window.addEventListener('beforeunload', event => {
+  if (!project) return;
+  event.preventDefault();
+  event.returnValue = true;
+});
 let selectedId = null;
 let past = [];
 let future = [];

@@ -9,7 +9,7 @@
   } catch { /* Storage can be disabled. */ }
 
   function apply() {
-    const automatic = system.matches ? 'midnight' : 'studio';
+    const automatic = system.matches ? 'system-dark' : 'system-light';
     const root = document.documentElement;
     root.dataset.theme = chosen === 'system' ? automatic : chosen;
     document.querySelectorAll('[data-choice]').forEach(button => {

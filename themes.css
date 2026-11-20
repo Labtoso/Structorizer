@@ -3,6 +3,14 @@
   --base: #eff2fa; --sheet: #ffffff; --ink: #17213a; --brand: #4154be;
   --cover: #202e65; --highlight: #b8c8ff; color-scheme: light;
 }
+[data-theme="system-light"] {
+  --base: #e8edef; --sheet: #fcfdfd; --ink: #1e2c31; --brand: #446671;
+  --cover: #34494f; --highlight: #c7dce1; color-scheme: light;
+}
+[data-theme="system-dark"] {
+  --base: #191d1e; --sheet: #2a3031; --ink: #f0f5f4; --brand: #546f73;
+  --cover: #354345; --highlight: #c8dbd9; color-scheme: dark;
+}
 [data-theme="midnight"] {
   --base: #111623; --sheet: #202738; --ink: #eef2ff; --brand: #7776d9;
   --cover: #262650; --highlight: #c4bbff; color-scheme: dark;
@@ -32,7 +40,7 @@
   --hover: var(--accent-soft); --slot: var(--surface-2); --slot-hover: var(--accent-soft);
   --el-hover: var(--surface-2); --code-bg: var(--surface-2); --code-text: var(--text); --code-border: var(--border);
 }
-:root:is([data-theme="midnight"],[data-theme="ember"]) {
+:root:is([data-theme="midnight"],[data-theme="system-dark"],[data-theme="ember"]) {
   --danger: #ff959b; --danger-soft: #492731;
 }
 .menubar { min-height: 50px; gap: 4px; }
