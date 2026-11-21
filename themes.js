@@ -1,7 +1,7 @@
 (() => {
   const key = 'structorizer.appearance';
   const system = matchMedia('(prefers-color-scheme: dark)');
-  const options = ['system', 'studio', 'midnight', 'lagoon', 'orchid', 'ember'];
+  const options = ['system', 'studio', 'midnight', 'lagoon', 'orchid', 'ember', 'oled'];
   let chosen = 'system';
   try {
     const stored = localStorage.getItem(key);

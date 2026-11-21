@@ -57,13 +57,7 @@ kbd { font-family: inherit; }
   background: var(--surface); border-bottom: 1px solid var(--border); user-select: none; z-index: 30;
 }
 .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; letter-spacing: -.01em; margin-right: 18px; font-size: 15px; }
-.logo {
-  width: 22px; height: 22px; border-radius: 6px; position: relative;
-  background: linear-gradient(135deg, var(--accent), #a35bd6);
-}
-.logo::before, .logo::after { content: ""; position: absolute; background: #fff; border-radius: 1px; }
-.logo::before { left: 5px; right: 5px; top: 6px; height: 2px; }
-.logo::after { left: 5px; top: 6px; bottom: 5px; width: 2px; }
+.logo { width: 26px; height: 26px; flex: none; background: url('favicon.svg?v=2') center / contain no-repeat; }
 
 .menu { position: relative; }
 .menu-title { display: block; padding: 6px 10px; border-radius: 7px; cursor: pointer; color: var(--muted); font-weight: 500; }
@@ -359,8 +353,8 @@ body.running .side-scroll { opacity: .45; }
 body.running #diagram .el.selected { outline: 0; box-shadow: none; }
 
 
-  :is([data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) #diagram .run-current, :is([data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) #runVars tr.changed td { background: #4a3a10 !important; }
-  :is([data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) .run-status.done { background: #12321f; color: #5fd08f; }
+  :is([data-theme="oled"], [data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) #diagram .run-current, :is([data-theme="oled"], [data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) #runVars tr.changed td { background: #4a3a10 !important; }
+  :is([data-theme="oled"], [data-theme="midnight"], [data-theme="system-dark"], [data-theme="ember"]) .run-status.done { background: #12321f; color: #5fd08f; }
 /* Narrow windows and portrait iPad: the run panel sits at the bottom (two columns) so the
    diagram keeps the full width */
 @media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
@@ -585,6 +579,7 @@ body.collapsed #sidebarGrip { display: none; }
 .export-stage { position: absolute; left: -100000px; top: 0; width: max-content; min-width: 384px; padding: 20px;
   --paper: #fff; --line: #283446; --slot: #f0f3f8; --muted: #46556a; color: #172334; background: var(--paper); }
 .export-stage[data-mode="dark"] { --paper: #202836; --line: #cbd5e5; --slot: #303c50; --muted: #c4d0df; color: #f4f7fb; }
+.export-stage[data-mode="oled"] { --paper: #000; --line: #acbdb4; --slot: #080b09; --muted: #cad9ce; color: #f3fbf6; }
 .export-stage .struct { min-width: min-content; }
 .export-stage .head .branch { font-size: .84em; }
 .export-stage .struct > .title { background: var(--slot); }
@@ -597,3 +592,13 @@ body.collapsed #sidebarGrip { display: none; }
 .move-slot:hover, .move-slot:focus-visible { background: var(--accent); color: white; }
 .seq.end-over { box-shadow: inset 0 -4px 0 var(--accent); }
 .touch-ghost { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 7px 12px; }
+
+.el.if > .cols { position: relative; }
+.branch-divider {
+  position: absolute; top: 0; bottom: 0; width: 14px; z-index: 3;
+  transform: translateX(-50%); cursor: col-resize; touch-action: none; user-select: none;
+}
+.branch-divider:is(:hover, :focus-visible, .active)::after {
+  content: ''; position: absolute; inset: 0 auto 0 calc(50% - 1px);
+  width: 3px; background: var(--accent); border-radius: 2px;
+}

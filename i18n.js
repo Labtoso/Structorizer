@@ -9,6 +9,7 @@ const LANGS = { de: 'Deutsch', en: 'English', fr: 'Français', it: 'Italiano' };
 
 const I18N = {
   de: {
+    'branch.resize': 'Breite der Zweige anpassen',
     'move.pick': 'Verschieben',
     'move.here': 'Hier einsetzen',
     'move.up': 'Nach oben (Alt+↑)',
@@ -124,6 +125,7 @@ const I18N = {
   },
 
   en: {
+    'branch.resize': 'Resize branches',
     'move.pick': 'Move',
     'move.here': 'Place here',
     'move.up': 'Move up (Alt+↑)',
@@ -239,6 +241,7 @@ const I18N = {
   },
 
   fr: {
+    'branch.resize': 'Ajuster la largeur des branches',
     'move.pick': 'Déplacer',
     'move.here': 'Placer ici',
     'move.up': 'Monter (Alt+↑)',
@@ -354,6 +357,7 @@ const I18N = {
   },
 
   it: {
+    'branch.resize': 'Regola la larghezza dei rami',
     'move.pick': 'Sposta',
     'move.here': 'Inserisci qui',
     'move.up': 'Sposta su (Alt+↑)',

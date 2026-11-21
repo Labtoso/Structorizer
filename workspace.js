@@ -50,6 +50,7 @@ function openImageExport() {
         stage.append($('#diagram .struct').cloneNode(true));
         document.body.append(stage);
         try {
+          stage.querySelectorAll('.branch-divider').forEach(grip => grip.remove());
           stage.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
           await document.fonts.ready;
           // Keep the layout width stable as text grows; rows can wrap and gain height.

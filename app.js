@@ -258,12 +258,15 @@ function renderNode(node) {
       el.append(body, label(node.text, 'label foot'));
       break;
     }
-    case 'if':
+    case 'if': {
+      const row = cols([node.yes, node.no]);
+      addBranchDivider(row, node);
       el.append(
         decisionHead(node.text, [tr('branch.true'), tr('branch.false')]),
-        cols([node.yes, node.no]),
+        row,
       );
       break;
+    }
     case 'switch':
       el.append(
         decisionHead(node.text, node.cases.map((c) => c.label)),
@@ -301,7 +304,8 @@ function decisionHead(text, labels) {
 function layoutDecisions(root = document.querySelector('#diagram')) {
   root.querySelectorAll('.if > .head, .switch > .head').forEach((head) => {
     const isSwitch = head.parentElement.classList.contains('switch');
-    const cols = [...head.nextElementSibling.children];
+    const row = head.nextElementSibling;
+    const cols = [...row.querySelectorAll(':scope > .seq')];
     const branches = [...head.querySelectorAll('.branch')];
 
     // Switch: each case column is at least as wide as its label
@@ -318,6 +322,11 @@ function layoutDecisions(root = document.querySelector('#diagram')) {
       return { left: r.left - base.left, right: r.right - base.left };
     });
     const split = edges[edges.length - 1].left;
+    const divider = row.querySelector(':scope > .branch-divider');
+    if (divider && w > 0) {
+      divider.style.left = split + 'px';
+      divider.setAttribute('aria-valuenow', Math.round(100 * split / w));
+    }
     const band = isSwitch ? Math.max(...branches.map((b) => b.offsetHeight)) + 6 : 0;
     const yMeet = h - band;
     const lineY = (x) => (x <= split ? (yMeet * x) / split : yMeet * (1 - (x - split) / (w - split)));
@@ -345,6 +354,89 @@ function layoutDecisions(root = document.querySelector('#diagram')) {
 // Re-measure whenever the diagram's size changes (web font loaded, sidebar toggled, window resized)
 new ResizeObserver(() => layoutDecisions()).observe(document.querySelector('#diagram'));
 document.fonts?.ready.then(() => layoutDecisions());
+
+// A saved proportion belongs to the If node, so nested diagrams, undo and
+// file/image exports use the same layout. Older files keep automatic sizing.
+function addBranchDivider(row, node) {
+  const first = row.firstElementChild;
+  const grip = document.createElement('div');
+  grip.className = 'branch-divider';
+  grip.tabIndex = 0;
+  grip.setAttribute('role', 'separator');
+  grip.setAttribute('aria-orientation', 'vertical');
+  grip.setAttribute('aria-label', tr('branch.resize'));
+  grip.title = tr('branch.resize');
+  grip.setAttribute('aria-valuemin', '0');
+  grip.setAttribute('aria-valuemax', '100');
+  row.append(grip);
+
+  function display(ratio) {
+    first.style.flex = Number.isFinite(ratio) && ratio > 0 && ratio < 1
+      ? '0 1 ' + (ratio * 100) + '%' : '';
+    row.children[1].style.flex = first.style.flex ? '1 1 0' : '';
+  }
+  display(node.splitRatio);
+
+  let pointer = null;
+  let offset = 0;
+  let pending = null;
+  function preview(x) {
+    const bounds = row.getBoundingClientRect();
+    const minimum = parseFloat(getComputedStyle(first).minWidth) || 96;
+    if (bounds.width <= 2 * minimum) return;
+    pending = Math.max(minimum, Math.min(bounds.width - minimum, x - bounds.left)) / bounds.width;
+    display(pending);
+    layoutDecisions();
+  }
+  function finish(keyboard = false) {
+    if (pending === null || pending === node.splitRatio) return;
+    snapshot();
+    node.splitRatio = pending;
+    pending = null;
+    commit();
+    if (keyboard) document.getElementById(grip.id)?.focus({ preventScroll: true });
+  }
+  grip.id = 'branch-divider-' + node.id;
+  grip.onpointerdown = event => {
+    if (event.button !== 0 || pointer !== null) return;
+    event.preventDefault();
+    event.stopPropagation();
+    pointer = event.pointerId;
+    offset = event.clientX - first.getBoundingClientRect().right;
+    grip.setPointerCapture(pointer);
+    grip.classList.add('active');
+  };
+  grip.onpointermove = event => {
+    if (event.pointerId === pointer) preview(event.clientX - offset);
+  };
+  grip.onpointerup = event => {
+    if (event.pointerId !== pointer) return;
+    pointer = null;
+    grip.classList.remove('active');
+    finish();
+  };
+  grip.onlostpointercapture = () => {
+    if (pointer === null) return;
+    pointer = pending = null;
+    grip.classList.remove('active');
+    display(node.splitRatio);
+    layoutDecisions();
+  };
+  grip.onkeydown = event => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const step = event.shiftKey ? 32 : 8;
+    preview(first.getBoundingClientRect().right + (event.key === 'ArrowLeft' ? -step : step));
+    finish(true);
+  };
+  for (const type of ['click', 'dblclick', 'touchstart', 'dragstart']) {
+    grip.addEventListener(type, event => {
+      event.stopPropagation();
+      if (type === 'dragstart') event.preventDefault();
+    });
+  }
+}
 
 function cols(lists) {
   const c = document.createElement('div');

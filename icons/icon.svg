@@ -1,5 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b5bd6"/><stop offset="1" stop-color="#a35bd6"/></linearGradient></defs>
-  <rect width="32" height="32" fill="url(#g)"/>
-  <path d="M10 11h12M11 11v10" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Structorizer">
+  <defs>
+    <linearGradient id="slate" x2="0.85" y2="1">
+      <stop stop-color="#26364f"/><stop offset="1" stop-color="#101724"/>
+    </linearGradient>
+    <linearGradient id="fork" x2="1" y2="0">
+      <stop stop-color="#67e8da"/><stop offset="1" stop-color="#a0aeff"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#slate)"/>
+  <path d="M14 18h36v28H14z" fill="#243347" stroke="url(#fork)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="m15 22 17 10 17-10M32 32v13" fill="none" stroke="url(#fork)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M20 38h6m12 0h6" stroke="#eef6ff" stroke-width="3" stroke-linecap="round"/>
 </svg>
