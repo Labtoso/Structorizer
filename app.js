@@ -1210,7 +1210,7 @@ function showHelp() {
   div.innerHTML = `
     <p>${tr('help.intro')}</p>
     <ul>${items}</ul>
-    <p><a href="./" target="_blank" rel="noopener">Structorizer</a> · <a href="https://github.com/Labtoso/Structorizer" target="_blank" rel="noopener">GitHub</a></p>
+    <p><a href="./" target="_blank" rel="noopener">Structorizer</a> · <a href="https://github.com/Labtoso/Structorizer" target="_blank" rel="noopener">GitHub</a> · <a href="https://labtoso.de/impressum" target="_blank" rel="noopener noreferrer">Impressum</a></p>
     <p><a href="./legacy/struct.html" target="_blank" rel="noopener">${tr('help.old')}</a></p>`;
   openInfo(tr('help.title'), div);
 }
